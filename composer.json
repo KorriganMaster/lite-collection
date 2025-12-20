@@ -2,6 +2,7 @@
     "name": "korriganmaster/lite_collection",
     "description": "PHP SQLlite collection",
     "type": "library",
+    "license": "MIT",
     "autoload": {
         "psr-4": {
             "Korriganmaster\\LiteCollection\\": "src/"
@@ -20,7 +21,7 @@
         "friendsofphp/php-cs-fixer": "^3.92"
     },
     "scripts": {
-        "tests": "./vendor/bin/phpunit ./test",
+        "test": "./vendor/bin/phpunit ./test",
         "phpstan": "./vendor/bin/phpstan analyse src --level=max",
         "csfixer": "./vendor/bin/php-cs-fixer fix src --config=.php-cs-fixer.dist.php"
     }
