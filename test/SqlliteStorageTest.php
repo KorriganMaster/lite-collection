@@ -7,6 +7,10 @@ use Korriganmaster\LiteCollection\Storage\StorageInterface;
 use PHPUnit\Framework\TestCase;
 
 /**
+ * Class SqlliteStorageTest
+ * This class contains unit tests for the SqlliteStorage class,
+ * ensuring it correctly implements StorageInterface and behaves as expected.
+ * 
  * @covers \Korriganmaster\LiteCollection\Storage\SqlliteStorage
  */
 class SqlliteStorageTest extends TestCase
@@ -21,7 +25,7 @@ class SqlliteStorageTest extends TestCase
         $this->assertInstanceOf(StorageInterface::class, $storage);
         unset($storage);
 
-        $storage = new SqlliteStorage('test_db.sqlite');
+        $storage = new SqlliteStorage(StorageInterface::MODE_NORMAL, 'id', 'test_db.sqlite');
         $this->assertFileExists('test_db.sqlite');
         unset($storage);
         $this->assertFileDoesNotExist('test_db.sqlite');
@@ -50,8 +54,22 @@ class SqlliteStorageTest extends TestCase
         $storage->insert($item);
         $this->assertEquals(1, count($storage));
 
-        $retrievedItem = $storage->findById(1);
+        $retrievedItem = $storage->findById(0);
         $this->assertEquals($item, $retrievedItem);
+
+        unset($storage);
+    }
+
+    /**
+     * @covers \Korriganmaster\LiteCollection\Storage\SqlliteStorage::findById
+     */
+    public function testRetrieveNonExistentItem()
+    {
+        $storage = new SqlliteStorage();
+        $this->assertEquals(0, count($storage));
+
+        $retrievedItem = $storage->findById(0);
+        $this->assertNull($retrievedItem);
 
         unset($storage);
     }
@@ -101,7 +119,7 @@ class SqlliteStorageTest extends TestCase
      */
     public function testInsertAndLoopItemsAssoc()
     {
-        $storage = new SqlliteStorage(':memory:', StorageInterface::MODE_ASSOCIATIVE, 'custom_id');
+        $storage = new SqlliteStorage(StorageInterface::MODE_ASSOCIATIVE, 'custom_id');
         $this->assertEquals(0, count($storage));
 
         $items = [
@@ -123,5 +141,99 @@ class SqlliteStorageTest extends TestCase
         $this->assertEquals($items, $retrievedItems);
 
         unset($storage);
+    }
+
+    /**
+     * @covers \Korriganmaster\LiteCollection\Storage\SqlliteStorage::insert
+     * @covers \Korriganmaster\LiteCollection\Storage\SqlliteStorage::exists
+     */
+    public function testExistsMethod()
+    {
+        $storage = new SqlliteStorage();
+        $item = ['id' => 1, 'name' => 'Test Item'];
+        $storage->insert($item);
+
+        $this->assertTrue($storage->exists(0));
+        $this->assertFalse($storage->exists(1));
+
+        unset($storage);
+    }
+
+    /**
+     * @covers \Korriganmaster\LiteCollection\Storage\SqlliteStorage::insert
+     * @covers \Korriganmaster\LiteCollection\Storage\SqlliteStorage::exists
+     */
+    public function testExistsMethodAssoc()
+    {
+        $storage = new SqlliteStorage(StorageInterface::MODE_ASSOCIATIVE, 'custom_id');
+        $item = ['custom_id' => 1, 'name' => 'Test Item'];
+        $storage->insert($item);
+
+        $this->assertTrue($storage->exists(1));
+        $this->assertFalse($storage->exists(2));
+
+        unset($storage);
+    }
+
+    /**
+     * @covers \Korriganmaster\LiteCollection\Storage\SqlliteStorage::insert
+     * @covers \Korriganmaster\LiteCollection\Storage\SqlliteStorage::update
+     * @covers \Korriganmaster\LiteCollection\Storage\SqlliteStorage::delete
+     * @covers \Korriganmaster\LiteCollection\Storage\SqlliteStorage::findById
+     * @covers \Korriganmaster\LiteCollection\Storage\SqlliteStorage::exists
+     */
+    public function testUpdateAndDeleteMethods()
+    {
+        $storage = new SqlliteStorage();
+        $item = ['id' => 1, 'name' => 'Original Name'];
+        $storage->insert($item);
+
+        // Ensure item exists
+        $this->assertTrue($storage->exists(0));
+        $retrievedItem = $storage->findById(0);
+        $this->assertEquals($item, $retrievedItem);
+
+        // Update the item
+        $updatedItem = ['id' => 1, 'name' => 'Updated Name'];
+        $storage->update(0, $updatedItem);
+        $retrievedItem = $storage->findById(0);
+        $this->assertEquals($updatedItem, $retrievedItem);
+
+        // Delete the item
+        $storage->delete(0);
+        $this->assertFalse($storage->exists(0));
+        $retrievedItem = $storage->findById(0);
+        $this->assertNull($retrievedItem);
+    }
+
+    /**
+     * @covers \Korriganmaster\LiteCollection\Storage\SqlliteStorage::insert
+     * @covers \Korriganmaster\LiteCollection\Storage\SqlliteStorage::update
+     * @covers \Korriganmaster\LiteCollection\Storage\SqlliteStorage::delete
+     * @covers \Korriganmaster\LiteCollection\Storage\SqlliteStorage::findById
+     * @covers \Korriganmaster\LiteCollection\Storage\SqlliteStorage::exists
+     */
+    public function testUpdateAndDeleteMethodsAssoc()
+    {
+        $storage = new SqlliteStorage(StorageInterface::MODE_ASSOCIATIVE, 'custom_id');
+        $item = ['custom_id' => 1, 'name' => 'Original Name'];
+        $storage->insert($item);
+
+        // Ensure item exists
+        $this->assertTrue($storage->exists(1));
+        $retrievedItem = $storage->findById(1);
+        $this->assertEquals($item, $retrievedItem);
+
+        // Update the item
+        $updatedItem = ['custom_id' => 1, 'name' => 'Updated Name'];
+        $storage->update(1, $updatedItem);
+        $retrievedItem = $storage->findById(1);
+        $this->assertEquals($updatedItem, $retrievedItem);
+    
+        // Delete the item
+        $storage->delete(1);
+        $this->assertFalse($storage->exists(1));
+        $retrievedItem = $storage->findById(1);
+        $this->assertNull($retrievedItem);
     }
 }

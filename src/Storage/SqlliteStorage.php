@@ -2,6 +2,8 @@
 
 namespace Korriganmaster\LiteCollection\Storage;
 
+use ArrayAccess;
+use RuntimeException;
 use SQLite3;
 use SQLite3Result;
 use SQLite3Stmt;
@@ -30,21 +32,21 @@ class SqlliteStorage extends AbstractStorage
     /**
      * Prepared statement for select data
      * 
-     * @var SQLite3Stmt $selectStmt
+     * @var SQLite3Stmt|false $selectStmt
      */
-    private SQLite3Stmt $selectStmt;
+    private SQLite3Stmt|false $selectStmt;
 
     /**
      * Result set from the last query
      * 
-     * @var SQLite3Result $result
+     * @var SQLite3Result|false $result
      */
-    private SQLite3Result $result;
+    private SQLite3Result|false $result;
 
     /**
      * Current row data
      * 
-     * @var array|bool $currentRow
+     * @var array<mixed>|bool $currentRow
      */
     private mixed $currentRow;
 
@@ -59,11 +61,13 @@ class SqlliteStorage extends AbstractStorage
      * SqlliteStorage constructor.
      * 
      * @param string $databasePath
+     * @param int $mode
+     * @param string $primaryKey
      */
     public function __construct(
-        string $databasePath = ':memory:', 
         int $mode = StorageInterface::MODE_NORMAL,
         string $primaryKey = 'id',
+        string $databasePath = ':memory:',
     ) {
         parent::__construct($mode, $primaryKey);
 
@@ -71,6 +75,10 @@ class SqlliteStorage extends AbstractStorage
         $this->db = new SQLite3($this->databasePath);
         $this->db->query('CREATE TABLE IF NOT EXISTS items (id INTEGER PRIMARY KEY, data BLOB)');
         $this->selectStmt = $this->db->prepare('SELECT * FROM items');
+
+        if ($this->selectStmt === false) {
+            throw new RuntimeException('Failed to prepare select statement.');
+        }
     }
 
     /**
@@ -100,11 +108,18 @@ class SqlliteStorage extends AbstractStorage
         }
 
         $stmt = $this->db->prepare($queryString);
+
+        if ($stmt === false) {
+            throw new RuntimeException('Failed to prepare insert statement.');
+        }
+
         $compressedData = gzcompress(serialize($item));
         $stmt->bindValue(':data', $compressedData, SQLITE3_BLOB);
 
         if ($this->mode === StorageInterface::MODE_ASSOCIATIVE) {
-            $id = $item[$this->primaryKey] ?? null;
+            $id = is_array($item) || $item instanceof ArrayAccess 
+                ? $item[$this->primaryKey] ?? null 
+                : null;
             $stmt->bindValue(':id', $id, SQLITE3_INTEGER);
         }
 
@@ -115,20 +130,136 @@ class SqlliteStorage extends AbstractStorage
      * Find an item by its ID
      * 
      * @param int $id
-     * @return array|null
+     * @return mixed
      */
-    public function findById(int $id): ?array
+    public function findById(int $id): mixed
     {
         $stmt = $this->db->prepare('SELECT * FROM items WHERE id = :id');
-        $stmt->bindValue(':id', $id, SQLITE3_INTEGER);
+
+        if ($stmt === false) {
+            throw new RuntimeException('Failed to prepare findById statement.');
+        }
+
+        $stmt->bindValue(':id', 
+            $this->mode === StorageInterface::MODE_ASSOCIATIVE 
+                ? $id 
+                : $id + 1, 
+            SQLITE3_INTEGER
+        );
         $result = $stmt->execute();
+
+        if ($result === false) {
+            return null;
+        }
+
         $row = $result->fetchArray(SQLITE3_ASSOC);
         if ($row) {
-            return unserialize(gzuncompress($row['data']));
+            if (!is_string($row['data'])) {
+                return null;
+            }
+
+            return unserialize((string)gzuncompress((string)$row['data']));
         }
         return null;
     }
 
+    /**
+     * Check if an item exists by its ID
+     * 
+     * @param int $id
+     * @return bool
+     */
+    public function exists(int $id): bool
+    {
+        $stmt = $this->db->prepare('SELECT COUNT(*) as count FROM items WHERE id = :id');
+
+        if ($stmt === false) {
+            throw new RuntimeException('Failed to prepare exists statement.');
+        }
+
+        $stmt->bindValue(
+            ':id', 
+            $this->mode === StorageInterface::MODE_ASSOCIATIVE 
+                ? $id 
+                : $id + 1, 
+            SQLITE3_INTEGER
+        );
+        $result = $stmt->execute();
+
+        if ($result === false) {
+            return false;
+        }
+
+        $row = $result->fetchArray(SQLITE3_ASSOC);
+        return $row
+            ? $row['count'] > 0
+            : false;
+    }
+
+    /**
+     * Update an existing item by its ID
+     * 
+     * @param int $id
+     * @param mixed $item
+     * @return void
+     */
+    public function update(int $id, mixed $item): void
+    {
+        $stmt = $this->db->prepare('UPDATE items SET data = :data WHERE id = :id');
+
+        if ($stmt === false) {
+            throw new RuntimeException('Failed to prepare update statement.');
+        }
+
+        $compressedData = gzcompress(serialize($item));
+        $stmt->bindValue(':data', $compressedData, SQLITE3_BLOB);
+        $stmt->bindValue(
+            ':id', 
+            $this->mode === StorageInterface::MODE_ASSOCIATIVE 
+                ? $id 
+                : $id + 1, 
+            SQLITE3_INTEGER
+        );
+        $stmt->execute();
+    }
+
+    /**
+     * Delete an item by its ID
+     * 
+     * @param int $id
+     * @return void
+     */
+    public function delete(int $id): void
+    {
+        $stmt = $this->db->prepare('DELETE FROM items WHERE id = :id');
+
+        if ($stmt === false) {
+            throw new RuntimeException('Failed to prepare delete statement.');
+        }
+
+        $stmt->bindValue(
+            ':id', 
+            $this->mode === StorageInterface::MODE_ASSOCIATIVE 
+                ? $id 
+                : $id + 1, 
+            SQLITE3_INTEGER
+        ); 
+        $stmt->execute();
+
+        // If in normal mode, we need to reindex IDs
+        if ($this->mode === StorageInterface::MODE_NORMAL) {
+            // Rebuild IDs to maintain sequential order
+            $stmt = $this->db->prepare('UPDATE items SET id = id - 1 WHERE id > :id');
+
+            if ($stmt === false) {
+                throw new RuntimeException('Failed to prepare reindex statement.');
+            }
+
+            $stmt->bindValue(':id', $id + 1, SQLITE3_INTEGER);
+            $stmt->execute();
+        }
+    }
+    
     /**
      * Count the number of items in storage
      * 
@@ -147,7 +278,15 @@ class SqlliteStorage extends AbstractStorage
      */
     public function current(): mixed
     {
-        return unserialize(gzuncompress($this->currentRow['data']));
+        if (!is_array($this->currentRow)) {
+            return null;
+        }
+
+        if (!is_string($this->currentRow['data'])) {
+            return null;
+        }
+
+        return unserialize((string)gzuncompress((string)$this->currentRow['data']));
     }
 
     /**
@@ -158,6 +297,12 @@ class SqlliteStorage extends AbstractStorage
     public function next(): void
     {
         $this->position++;
+
+        if ($this->result === false) {
+            $this->currentRow = false;
+            return;
+        }
+
         $this->currentRow = $this->result->fetchArray(SQLITE3_ASSOC);
     }
 
@@ -169,7 +314,9 @@ class SqlliteStorage extends AbstractStorage
     public function key(): mixed
     {
         if ($this->mode === StorageInterface::MODE_ASSOCIATIVE) {
-            return $this->currentRow['id'];
+            return is_array($this->currentRow) 
+                ? $this->currentRow['id'] 
+                : $this->position;
         }
 
         return $this->position;
@@ -182,7 +329,7 @@ class SqlliteStorage extends AbstractStorage
      */
     public function valid(): bool
     {
-        return $this->currentRow !== false && $this->currentRow !== null;
+        return !empty($this->currentRow);
     }
 
     /**
@@ -193,7 +340,15 @@ class SqlliteStorage extends AbstractStorage
     public function rewind(): void
     {
         $this->position = 0;
+
+        if ($this->selectStmt === false) {
+            $this->currentRow = false;
+            return;
+        }
+
         $this->result = $this->selectStmt->execute();
-        $this->currentRow = $this->result->fetchArray(SQLITE3_ASSOC);
+        $this->currentRow = $this->result === false
+            ? false
+            : $this->result->fetchArray(SQLITE3_ASSOC);
     }
 }

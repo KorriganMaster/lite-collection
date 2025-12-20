@@ -7,6 +7,9 @@ use Iterator;
 
 /**
  * Interface StorageInterface
+ * 
+ * @extends Iterator<int, mixed>
+ * 
  * @package Korriganmaster\LiteCollection\Storage
  */
 interface StorageInterface extends Countable, Iterator
@@ -40,7 +43,32 @@ interface StorageInterface extends Countable, Iterator
      * Find an item by its ID
      * 
      * @param int $id
-     * @return array|null
+     * @return mixed
      */
-    public function findById(int $id): ?array;
+    public function findById(int $id): mixed;
+
+    /**
+     * Check if an item exists by its ID
+     * 
+     * @param int $id
+     * @return bool
+     */
+    public function exists(int $id): bool;
+
+    /**
+     * Update an existing item by its ID
+     * 
+     * @param int $id
+     * @param mixed $item
+     * @return void
+     */
+    public function update(int $id, mixed $item): void;
+
+    /**
+     * Delete an item by its ID
+     * 
+     * @param int $id
+     * @return void
+     */
+    public function delete(int $id): void;
 }
