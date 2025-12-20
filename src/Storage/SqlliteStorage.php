@@ -17,49 +17,49 @@ class SqlliteStorage extends AbstractStorage
     /**
      * Path to the SQLite database file
      * defaults to in-memory database
-     * 
+     *
      * @var string $databasePath
      */
     private string $databasePath = ':memory:';
 
     /**
      * SQLite database connection
-     * 
+     *
      * @var SQLite3 $db
      */
     private SQLite3 $db;
 
     /**
      * Prepared statement for select data
-     * 
+     *
      * @var SQLite3Stmt|false $selectStmt
      */
     private SQLite3Stmt|false $selectStmt;
 
     /**
      * Result set from the last query
-     * 
+     *
      * @var SQLite3Result|false $result
      */
     private SQLite3Result|false $result;
 
     /**
      * Current row data
-     * 
+     *
      * @var array<mixed>|bool $currentRow
      */
     private mixed $currentRow;
 
     /**
      * Current position in the iterator
-     * 
+     *
      * @var int $position
      */
     private int $position = 0;
 
     /**
      * SqlliteStorage constructor.
-     * 
+     *
      * @param string $databasePath
      * @param int $mode
      * @param string $primaryKey
@@ -83,7 +83,7 @@ class SqlliteStorage extends AbstractStorage
 
     /**
      * Destructor to close the database connection
-     * 
+     *
      * @return void
      */
     public function __destruct()
@@ -97,12 +97,13 @@ class SqlliteStorage extends AbstractStorage
 
     /**
      * Insert an item into storage
-     * 
+     *
      * @param mixed $item
      * @return void
      */
     public function insert(mixed $item): void
-    {   $queryString = 'INSERT INTO items (data) VALUES (:data)';
+    {
+        $queryString = 'INSERT INTO items (data) VALUES (:data)';
         if ($this->mode === StorageInterface::MODE_ASSOCIATIVE) {
             $queryString = 'INSERT INTO items (id, data) VALUES (:id, :data)';
         }
@@ -117,8 +118,8 @@ class SqlliteStorage extends AbstractStorage
         $stmt->bindValue(':data', $compressedData, SQLITE3_BLOB);
 
         if ($this->mode === StorageInterface::MODE_ASSOCIATIVE) {
-            $id = is_array($item) || $item instanceof ArrayAccess 
-                ? $item[$this->primaryKey] ?? null 
+            $id = is_array($item) || $item instanceof ArrayAccess
+                ? $item[$this->primaryKey] ?? null
                 : null;
             $stmt->bindValue(':id', $id, SQLITE3_INTEGER);
         }
@@ -128,7 +129,7 @@ class SqlliteStorage extends AbstractStorage
 
     /**
      * Find an item by its ID
-     * 
+     *
      * @param int $id
      * @return mixed
      */
@@ -140,11 +141,12 @@ class SqlliteStorage extends AbstractStorage
             throw new RuntimeException('Failed to prepare findById statement.');
         }
 
-        $stmt->bindValue(':id', 
-            $this->mode === StorageInterface::MODE_ASSOCIATIVE 
-                ? $id 
-                : $id + 1, 
-            SQLITE3_INTEGER
+        $stmt->bindValue(
+            ':id',
+            $this->mode === StorageInterface::MODE_ASSOCIATIVE
+                ? $id
+                : $id + 1,
+            SQLITE3_INTEGER,
         );
         $result = $stmt->execute();
 
@@ -158,14 +160,14 @@ class SqlliteStorage extends AbstractStorage
                 return null;
             }
 
-            return unserialize((string)gzuncompress((string)$row['data']));
+            return unserialize((string) gzuncompress((string) $row['data']));
         }
         return null;
     }
 
     /**
      * Check if an item exists by its ID
-     * 
+     *
      * @param int $id
      * @return bool
      */
@@ -178,11 +180,11 @@ class SqlliteStorage extends AbstractStorage
         }
 
         $stmt->bindValue(
-            ':id', 
-            $this->mode === StorageInterface::MODE_ASSOCIATIVE 
-                ? $id 
-                : $id + 1, 
-            SQLITE3_INTEGER
+            ':id',
+            $this->mode === StorageInterface::MODE_ASSOCIATIVE
+                ? $id
+                : $id + 1,
+            SQLITE3_INTEGER,
         );
         $result = $stmt->execute();
 
@@ -198,7 +200,7 @@ class SqlliteStorage extends AbstractStorage
 
     /**
      * Update an existing item by its ID
-     * 
+     *
      * @param int $id
      * @param mixed $item
      * @return void
@@ -214,18 +216,18 @@ class SqlliteStorage extends AbstractStorage
         $compressedData = gzcompress(serialize($item));
         $stmt->bindValue(':data', $compressedData, SQLITE3_BLOB);
         $stmt->bindValue(
-            ':id', 
-            $this->mode === StorageInterface::MODE_ASSOCIATIVE 
-                ? $id 
-                : $id + 1, 
-            SQLITE3_INTEGER
+            ':id',
+            $this->mode === StorageInterface::MODE_ASSOCIATIVE
+                ? $id
+                : $id + 1,
+            SQLITE3_INTEGER,
         );
         $stmt->execute();
     }
 
     /**
      * Delete an item by its ID
-     * 
+     *
      * @param int $id
      * @return void
      */
@@ -238,12 +240,12 @@ class SqlliteStorage extends AbstractStorage
         }
 
         $stmt->bindValue(
-            ':id', 
-            $this->mode === StorageInterface::MODE_ASSOCIATIVE 
-                ? $id 
-                : $id + 1, 
-            SQLITE3_INTEGER
-        ); 
+            ':id',
+            $this->mode === StorageInterface::MODE_ASSOCIATIVE
+                ? $id
+                : $id + 1,
+            SQLITE3_INTEGER,
+        );
         $stmt->execute();
 
         // If in normal mode, we need to reindex IDs
@@ -259,21 +261,21 @@ class SqlliteStorage extends AbstractStorage
             $stmt->execute();
         }
     }
-    
+
     /**
      * Count the number of items in storage
-     * 
+     *
      * @return int
      */
     public function count(): int
     {
         $countResult = $this->db->querySingle('SELECT COUNT(*) as count FROM items');
-        return (int)$countResult;
+        return (int) $countResult;
     }
 
     /**
      * Get the current item data
-     * 
+     *
      * @return mixed
      */
     public function current(): mixed
@@ -286,12 +288,12 @@ class SqlliteStorage extends AbstractStorage
             return null;
         }
 
-        return unserialize((string)gzuncompress((string)$this->currentRow['data']));
+        return unserialize((string) gzuncompress((string) $this->currentRow['data']));
     }
 
     /**
      * Move to the next item in storage
-     * 
+     *
      * @return void
      */
     public function next(): void
@@ -308,14 +310,14 @@ class SqlliteStorage extends AbstractStorage
 
     /**
      * Get the key of the current item
-     * 
+     *
      * @return mixed
      */
     public function key(): mixed
     {
         if ($this->mode === StorageInterface::MODE_ASSOCIATIVE) {
-            return is_array($this->currentRow) 
-                ? $this->currentRow['id'] 
+            return is_array($this->currentRow)
+                ? $this->currentRow['id']
                 : $this->position;
         }
 
@@ -324,7 +326,7 @@ class SqlliteStorage extends AbstractStorage
 
     /**
      * Check if the current position is valid
-     * 
+     *
      * @return bool
      */
     public function valid(): bool
@@ -334,7 +336,7 @@ class SqlliteStorage extends AbstractStorage
 
     /**
      * Rewind to the first item in storage
-     * 
+     *
      * @return void
      */
     public function rewind(): void

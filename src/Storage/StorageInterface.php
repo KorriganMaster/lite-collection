@@ -1,4 +1,4 @@
-<?php 
+<?php
 
 namespace Korriganmaster\LiteCollection\Storage;
 
@@ -7,16 +7,16 @@ use Iterator;
 
 /**
  * Interface StorageInterface
- * 
+ *
  * @extends Iterator<int, mixed>
- * 
+ *
  * @package Korriganmaster\LiteCollection\Storage
  */
 interface StorageInterface extends Countable, Iterator
 {
     // Storage modes
-    const MODE_NORMAL = 1;
-    const MODE_ASSOCIATIVE = 2;
+    public const MODE_NORMAL = 1;
+    public const MODE_ASSOCIATIVE = 2;
 
     /**
      * StorageInterface constructor.
@@ -26,14 +26,14 @@ interface StorageInterface extends Countable, Iterator
     /**
      * Destructor to close the storage connection
      * and free resources
-     * 
+     *
      * @return void
      */
     public function __destruct();
 
     /**
      * Insert an item into storage
-     * 
+     *
      * @param mixed $item
      * @return void
      */
@@ -41,7 +41,7 @@ interface StorageInterface extends Countable, Iterator
 
     /**
      * Find an item by its ID
-     * 
+     *
      * @param int $id
      * @return mixed
      */
@@ -49,7 +49,7 @@ interface StorageInterface extends Countable, Iterator
 
     /**
      * Check if an item exists by its ID
-     * 
+     *
      * @param int $id
      * @return bool
      */
@@ -57,7 +57,7 @@ interface StorageInterface extends Countable, Iterator
 
     /**
      * Update an existing item by its ID
-     * 
+     *
      * @param int $id
      * @param mixed $item
      * @return void
@@ -66,7 +66,7 @@ interface StorageInterface extends Countable, Iterator
 
     /**
      * Delete an item by its ID
-     * 
+     *
      * @param int $id
      * @return void
      */

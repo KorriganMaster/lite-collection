@@ -16,7 +16,7 @@ use Traversable;
  *
  * @implements ArrayAccess<int, mixed>
  * @implements IteratorAggregate<int, mixed>
- *  
+ *
  * @package Korriganmaster\LiteCollection
  */
 class LiteCollection implements Countable, ArrayAccess, IteratorAggregate
@@ -80,7 +80,7 @@ class LiteCollection implements Countable, ArrayAccess, IteratorAggregate
     public function offsetUnset($offset): void
     {
         $this->storage->delete($offset);
-    }  
+    }
 
     /**
      * Check if an item exists at the specified offset.

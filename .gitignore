@@ -1,1 +1,5 @@
+# Ignore Composer's vendor directory
 vendor/
+
+# Ignore CSS Fixer cache files
+.php-cs-fixer.cache
