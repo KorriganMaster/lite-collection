@@ -9,10 +9,10 @@ use SQLite3Result;
 use SQLite3Stmt;
 
 /**
- * Class SqlliteStorage
+ * Class SqliteStorage
  * @package Korriganmaster\LiteCollection\Storage
  */
-class SqlliteStorage extends AbstractStorage
+class SqliteStorage extends AbstractStorage
 {
     /**
      * Path to the SQLite database file
@@ -58,7 +58,7 @@ class SqlliteStorage extends AbstractStorage
     private int $position = 0;
 
     /**
-     * SqlliteStorage constructor.
+     * SqliteStorage constructor.
      *
      * @param string $databasePath
      * @param int $mode

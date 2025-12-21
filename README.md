@@ -23,10 +23,10 @@ composer require korriganmaster/lite-collection
 
 ```php
 use Korriganmaster\LiteCollection\LiteCollection;
-use Korriganmaster\LiteCollection\Storage\SqlliteStorage;
+use Korriganmaster\LiteCollection\Storage\SqliteStorage;
 
 // Create in-memory storage
-$storage = new SqlliteStorage();
+$storage = new SqliteStorage();
 $collection = new LiteCollection($storage);
 
 // Add items
@@ -48,11 +48,11 @@ foreach ($collection as $item) {
 ### Associative Mode with Custom Key
 
 ```php
-use Korriganmaster\LiteCollection\Storage\SqlliteStorage;
+use Korriganmaster\LiteCollection\Storage\SqliteStorage;
 use Korriganmaster\LiteCollection\Storage\StorageInterface;
 
 // Create storage with a custom primary key
-$storage = new SqlliteStorage(
+$storage = new SqliteStorage(
     StorageInterface::MODE_ASSOCIATIVE, 
     'custom_id'
 );
@@ -67,7 +67,7 @@ $item = $storage->findById(100);
 
 ```php
 // Create disk storage
-$storage = new SqlliteStorage(
+$storage = new SqliteStorage(
     StorageInterface::MODE_NORMAL,
     'id',
     'path/to/database.sqlite'
@@ -87,9 +87,9 @@ The [`LiteCollection`](src/LiteCollection.php) class provides a collection inter
 - **`offsetExists($offset): bool`**: Checks if an item exists
 - **`getIterator(): Traversable`**: Returns an iterator to traverse the collection
 
-### SqlliteStorage
+### SqliteStorage
 
-The [`SqlliteStorage`](src/Storage/SqlliteStorage.php) class implements [`StorageInterface`](src/Storage/StorageInterface.php):
+The [`SqliteStorage`](src/Storage/SqliteStorage.php) class implements [`StorageInterface`](src/Storage/StorageInterface.php):
 
 - **`insert(mixed $item): void`**: Inserts a new item
 - **`findById(int $id): mixed`**: Finds an item by its ID
@@ -117,7 +117,7 @@ composer test
 
 Tests cover:
 - [`LiteCollectionTest`](test/LiteCollectionTest.php): Collection tests
-- [`SqlliteStorageTest`](test/SqlliteStorageTest.php): SQLite storage tests
+- [`SqliteStorageTest`](test/SqliteStorageTest.php): SQLite storage tests
 
 ## Development
 
@@ -146,7 +146,7 @@ The project follows a simple architecture:
 
 - **[`LiteCollection`](src/LiteCollection.php)**: Main collection class
 - **[`AbstractStorage`](src/Storage/AbstractStorage.php)**: Abstract class for storage systems
-- **[`SqlliteStorage`](src/Storage/SqlliteStorage.php)**: SQLite storage implementation
+- **[`SqliteStorage`](src/Storage/SqliteStorage.php)**: SQLite storage implementation
 - **[`StorageInterface`](src/Storage/StorageInterface.php)**: Interface defining the storage contract
 
 ## License

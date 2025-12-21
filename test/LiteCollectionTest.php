@@ -4,7 +4,7 @@ namespace Test;
 
 use Countable;
 use Korriganmaster\LiteCollection\LiteCollection;
-use Korriganmaster\LiteCollection\Storage\SqlliteStorage;
+use Korriganmaster\LiteCollection\Storage\SqliteStorage;
 use Korriganmaster\LiteCollection\Storage\StorageInterface;
 use PHPUnit\Framework\TestCase;
 
@@ -25,7 +25,7 @@ class LiteCollectionTest extends TestCase
      */
     public function testCountableInterface()
     {
-        $collection = new LiteCollection(new SqlliteStorage());
+        $collection = new LiteCollection(new SqliteStorage());
         $this->assertInstanceOf(Countable::class, $collection);
 
         // Initially, the collection should be empty
@@ -44,7 +44,7 @@ class LiteCollectionTest extends TestCase
      */
     public function testArrayAccessInterface()
     {
-        $collection = new LiteCollection(new SqlliteStorage());
+        $collection = new LiteCollection(new SqliteStorage());
 
         // Add some items to the storage
         $collection[] = ['id' => 1, 'name' => 'Item 1'];
@@ -69,7 +69,7 @@ class LiteCollectionTest extends TestCase
      */
     public function testArrayAccessInterfaceAssoc()
     {
-        $storage = new SqlliteStorage(StorageInterface::MODE_ASSOCIATIVE, 'id');
+        $storage = new SqliteStorage(StorageInterface::MODE_ASSOCIATIVE, 'id');
         $collection = new LiteCollection($storage);
 
         // Add some items to the storage
@@ -95,7 +95,7 @@ class LiteCollectionTest extends TestCase
      */
     public function testLoopingOverCollection()
     {
-        $collection = new LiteCollection(new SqlliteStorage());
+        $collection = new LiteCollection(new SqliteStorage());
 
         // Add some items to the storage
         $collection[] = ['id' => 1, 'name' => 'Item 1'];
@@ -110,7 +110,7 @@ class LiteCollectionTest extends TestCase
         $this->assertEquals([0 => 'Item 1', 1 => 'Item 2', 2 => 'Item 3'], $names);
 
         // Test with object items
-        $collection = new LiteCollection(new SqlliteStorage());
+        $collection = new LiteCollection(new SqliteStorage());
         $collection[] = (object)['id' => 1, 'name' => 'Item 1'];
         $collection[] = (object)['id' => 2, 'name' => 'Item 2'];
         $collection[] = (object)['id' => 3, 'name' => 'Item 3'];
@@ -127,7 +127,7 @@ class LiteCollectionTest extends TestCase
      */
     public function testLoopingOverCollectionAssoc()
     {
-        $storage = new SqlliteStorage(StorageInterface::MODE_ASSOCIATIVE, 'custom_id');
+        $storage = new SqliteStorage(StorageInterface::MODE_ASSOCIATIVE, 'custom_id');
         $collection = new LiteCollection($storage);
 
         // Add some items to the storage

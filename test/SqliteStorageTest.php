@@ -2,52 +2,52 @@
 
 namespace Test;
 
-use Korriganmaster\LiteCollection\Storage\SqlliteStorage;
+use Korriganmaster\LiteCollection\Storage\SqliteStorage;
 use Korriganmaster\LiteCollection\Storage\StorageInterface;
 use PHPUnit\Framework\TestCase;
 
 /**
- * Class SqlliteStorageTest
- * This class contains unit tests for the SqlliteStorage class,
+ * Class SqliteStorageTest
+ * This class contains unit tests for the SqliteStorage class,
  * ensuring it correctly implements StorageInterface and behaves as expected.
  * 
- * @covers \Korriganmaster\LiteCollection\Storage\SqlliteStorage
+ * @covers \Korriganmaster\LiteCollection\Storage\SqliteStorage
  */
-class SqlliteStorageTest extends TestCase
+class SqliteStorageTest extends TestCase
 {
     /**
-     * @covers \Korriganmaster\LiteCollection\Storage\SqlliteStorage::__construct
-     * @covers \Korriganmaster\LiteCollection\Storage\SqlliteStorage::__destruct
+     * @covers \Korriganmaster\LiteCollection\Storage\SqliteStorage::__construct
+     * @covers \Korriganmaster\LiteCollection\Storage\SqliteStorage::__destruct
      */
     public function testCreateAndDestructStorage()
     {
-        $storage = new SqlliteStorage();
+        $storage = new SqliteStorage();
         $this->assertInstanceOf(StorageInterface::class, $storage);
         unset($storage);
 
-        $storage = new SqlliteStorage(StorageInterface::MODE_NORMAL, 'id', 'test_db.sqlite');
+        $storage = new SqliteStorage(StorageInterface::MODE_NORMAL, 'id', 'test_db.sqlite');
         $this->assertFileExists('test_db.sqlite');
         unset($storage);
         $this->assertFileDoesNotExist('test_db.sqlite');
     }
 
     /**
-     * @covers \Korriganmaster\LiteCollection\Storage\SqlliteStorage::count
+     * @covers \Korriganmaster\LiteCollection\Storage\SqliteStorage::count
      */
     public function testCountItemsInEmptyStorage()
     {
-        $storage = new SqlliteStorage();
+        $storage = new SqliteStorage();
         $this->assertEquals(0, count($storage));
         unset($storage);
     }
 
     /**
-     * @covers \Korriganmaster\LiteCollection\Storage\SqlliteStorage::insert
-     * @covers \Korriganmaster\LiteCollection\Storage\SqlliteStorage::findById
+     * @covers \Korriganmaster\LiteCollection\Storage\SqliteStorage::insert
+     * @covers \Korriganmaster\LiteCollection\Storage\SqliteStorage::findById
      */
     public function testInsertAndRetrieveItem()
     {
-        $storage = new SqlliteStorage();
+        $storage = new SqliteStorage();
         $this->assertEquals(0, count($storage));
 
         $item = ['id' => 1, 'name' => 'Test Item'];
@@ -61,11 +61,11 @@ class SqlliteStorageTest extends TestCase
     }
 
     /**
-     * @covers \Korriganmaster\LiteCollection\Storage\SqlliteStorage::findById
+     * @covers \Korriganmaster\LiteCollection\Storage\SqliteStorage::findById
      */
     public function testRetrieveNonExistentItem()
     {
-        $storage = new SqlliteStorage();
+        $storage = new SqliteStorage();
         $this->assertEquals(0, count($storage));
 
         $retrievedItem = $storage->findById(0);
@@ -75,17 +75,17 @@ class SqlliteStorageTest extends TestCase
     }
 
     /**
-     * @covers \Korriganmaster\LiteCollection\Storage\SqlliteStorage::insert
-     * @covers \Korriganmaster\LiteCollection\Storage\SqlliteStorage::count
-     * @covers \Korriganmaster\LiteCollection\Storage\SqlliteStorage::rewind
-     * @covers \Korriganmaster\LiteCollection\Storage\SqlliteStorage::current
-     * @covers \Korriganmaster\LiteCollection\Storage\SqlliteStorage::key
-     * @covers \Korriganmaster\LiteCollection\Storage\SqlliteStorage::next
-     * @covers \Korriganmaster\LiteCollection\Storage\SqlliteStorage::valid
+     * @covers \Korriganmaster\LiteCollection\Storage\SqliteStorage::insert
+     * @covers \Korriganmaster\LiteCollection\Storage\SqliteStorage::count
+     * @covers \Korriganmaster\LiteCollection\Storage\SqliteStorage::rewind
+     * @covers \Korriganmaster\LiteCollection\Storage\SqliteStorage::current
+     * @covers \Korriganmaster\LiteCollection\Storage\SqliteStorage::key
+     * @covers \Korriganmaster\LiteCollection\Storage\SqliteStorage::next
+     * @covers \Korriganmaster\LiteCollection\Storage\SqliteStorage::valid
      */
     public function testInsertAndLoopItems()
     {
-        $storage = new SqlliteStorage();
+        $storage = new SqliteStorage();
         $this->assertEquals(0, count($storage));
 
         $items = [
@@ -109,17 +109,17 @@ class SqlliteStorageTest extends TestCase
     }
 
     /**
-     * @covers \Korriganmaster\LiteCollection\Storage\SqlliteStorage::insert
-     * @covers \Korriganmaster\LiteCollection\Storage\SqlliteStorage::count
-     * @covers \Korriganmaster\LiteCollection\Storage\SqlliteStorage::rewind
-     * @covers \Korriganmaster\LiteCollection\Storage\SqlliteStorage::current
-     * @covers \Korriganmaster\LiteCollection\Storage\SqlliteStorage::key
-     * @covers \Korriganmaster\LiteCollection\Storage\SqlliteStorage::next
-     * @covers \Korriganmaster\LiteCollection\Storage\SqlliteStorage::valid
+     * @covers \Korriganmaster\LiteCollection\Storage\SqliteStorage::insert
+     * @covers \Korriganmaster\LiteCollection\Storage\SqliteStorage::count
+     * @covers \Korriganmaster\LiteCollection\Storage\SqliteStorage::rewind
+     * @covers \Korriganmaster\LiteCollection\Storage\SqliteStorage::current
+     * @covers \Korriganmaster\LiteCollection\Storage\SqliteStorage::key
+     * @covers \Korriganmaster\LiteCollection\Storage\SqliteStorage::next
+     * @covers \Korriganmaster\LiteCollection\Storage\SqliteStorage::valid
      */
     public function testInsertAndLoopItemsAssoc()
     {
-        $storage = new SqlliteStorage(StorageInterface::MODE_ASSOCIATIVE, 'custom_id');
+        $storage = new SqliteStorage(StorageInterface::MODE_ASSOCIATIVE, 'custom_id');
         $this->assertEquals(0, count($storage));
 
         $items = [
@@ -144,12 +144,12 @@ class SqlliteStorageTest extends TestCase
     }
 
     /**
-     * @covers \Korriganmaster\LiteCollection\Storage\SqlliteStorage::insert
-     * @covers \Korriganmaster\LiteCollection\Storage\SqlliteStorage::exists
+     * @covers \Korriganmaster\LiteCollection\Storage\SqliteStorage::insert
+     * @covers \Korriganmaster\LiteCollection\Storage\SqliteStorage::exists
      */
     public function testExistsMethod()
     {
-        $storage = new SqlliteStorage();
+        $storage = new SqliteStorage();
         $item = ['id' => 1, 'name' => 'Test Item'];
         $storage->insert($item);
 
@@ -160,12 +160,12 @@ class SqlliteStorageTest extends TestCase
     }
 
     /**
-     * @covers \Korriganmaster\LiteCollection\Storage\SqlliteStorage::insert
-     * @covers \Korriganmaster\LiteCollection\Storage\SqlliteStorage::exists
+     * @covers \Korriganmaster\LiteCollection\Storage\SqliteStorage::insert
+     * @covers \Korriganmaster\LiteCollection\Storage\SqliteStorage::exists
      */
     public function testExistsMethodAssoc()
     {
-        $storage = new SqlliteStorage(StorageInterface::MODE_ASSOCIATIVE, 'custom_id');
+        $storage = new SqliteStorage(StorageInterface::MODE_ASSOCIATIVE, 'custom_id');
         $item = ['custom_id' => 1, 'name' => 'Test Item'];
         $storage->insert($item);
 
@@ -176,15 +176,15 @@ class SqlliteStorageTest extends TestCase
     }
 
     /**
-     * @covers \Korriganmaster\LiteCollection\Storage\SqlliteStorage::insert
-     * @covers \Korriganmaster\LiteCollection\Storage\SqlliteStorage::update
-     * @covers \Korriganmaster\LiteCollection\Storage\SqlliteStorage::delete
-     * @covers \Korriganmaster\LiteCollection\Storage\SqlliteStorage::findById
-     * @covers \Korriganmaster\LiteCollection\Storage\SqlliteStorage::exists
+     * @covers \Korriganmaster\LiteCollection\Storage\SqliteStorage::insert
+     * @covers \Korriganmaster\LiteCollection\Storage\SqliteStorage::update
+     * @covers \Korriganmaster\LiteCollection\Storage\SqliteStorage::delete
+     * @covers \Korriganmaster\LiteCollection\Storage\SqliteStorage::findById
+     * @covers \Korriganmaster\LiteCollection\Storage\SqliteStorage::exists
      */
     public function testUpdateAndDeleteMethods()
     {
-        $storage = new SqlliteStorage();
+        $storage = new SqliteStorage();
         $item = ['id' => 1, 'name' => 'Original Name'];
         $storage->insert($item);
 
@@ -207,15 +207,15 @@ class SqlliteStorageTest extends TestCase
     }
 
     /**
-     * @covers \Korriganmaster\LiteCollection\Storage\SqlliteStorage::insert
-     * @covers \Korriganmaster\LiteCollection\Storage\SqlliteStorage::update
-     * @covers \Korriganmaster\LiteCollection\Storage\SqlliteStorage::delete
-     * @covers \Korriganmaster\LiteCollection\Storage\SqlliteStorage::findById
-     * @covers \Korriganmaster\LiteCollection\Storage\SqlliteStorage::exists
+     * @covers \Korriganmaster\LiteCollection\Storage\SqliteStorage::insert
+     * @covers \Korriganmaster\LiteCollection\Storage\SqliteStorage::update
+     * @covers \Korriganmaster\LiteCollection\Storage\SqliteStorage::delete
+     * @covers \Korriganmaster\LiteCollection\Storage\SqliteStorage::findById
+     * @covers \Korriganmaster\LiteCollection\Storage\SqliteStorage::exists
      */
     public function testUpdateAndDeleteMethodsAssoc()
     {
-        $storage = new SqlliteStorage(StorageInterface::MODE_ASSOCIATIVE, 'custom_id');
+        $storage = new SqliteStorage(StorageInterface::MODE_ASSOCIATIVE, 'custom_id');
         $item = ['custom_id' => 1, 'name' => 'Original Name'];
         $storage->insert($item);
 
