@@ -143,9 +143,7 @@ class SqlliteStorage extends AbstractStorage
 
         $stmt->bindValue(
             ':id',
-            $this->mode === StorageInterface::MODE_ASSOCIATIVE
-                ? $id
-                : $id + 1,
+            $this->normalizeId($id),
             SQLITE3_INTEGER,
         );
         $result = $stmt->execute();
@@ -181,9 +179,7 @@ class SqlliteStorage extends AbstractStorage
 
         $stmt->bindValue(
             ':id',
-            $this->mode === StorageInterface::MODE_ASSOCIATIVE
-                ? $id
-                : $id + 1,
+            $this->normalizeId($id),
             SQLITE3_INTEGER,
         );
         $result = $stmt->execute();
@@ -217,9 +213,7 @@ class SqlliteStorage extends AbstractStorage
         $stmt->bindValue(':data', $compressedData, SQLITE3_BLOB);
         $stmt->bindValue(
             ':id',
-            $this->mode === StorageInterface::MODE_ASSOCIATIVE
-                ? $id
-                : $id + 1,
+            $this->normalizeId($id),
             SQLITE3_INTEGER,
         );
         $stmt->execute();
@@ -241,9 +235,7 @@ class SqlliteStorage extends AbstractStorage
 
         $stmt->bindValue(
             ':id',
-            $this->mode === StorageInterface::MODE_ASSOCIATIVE
-                ? $id
-                : $id + 1,
+            $this->normalizeId($id),
             SQLITE3_INTEGER,
         );
         $stmt->execute();
@@ -352,5 +344,18 @@ class SqlliteStorage extends AbstractStorage
         $this->currentRow = $this->result === false
             ? false
             : $this->result->fetchArray(SQLITE3_ASSOC);
+    }
+
+    /**
+     * Normalize ID based on storage mode
+     *
+     * @param int $id
+     * @return int
+     */
+    private function normalizeId(int $id): int
+    {
+        return $this->mode === StorageInterface::MODE_ASSOCIATIVE
+            ? $id
+            : $id + 1;
     }
 }
