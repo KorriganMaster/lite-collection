@@ -19,33 +19,21 @@ use PHPUnit\Framework\TestCase;
  */
 class LiteCollectionTest extends TestCase
 {
-    /**
-     * @var StorageInterface $storage
-     */
-    private StorageInterface $storage;
-
-    /**
-     * Setup method to initialize storage before each test.
-     */
-    public function setUp(): void
-    {
-        $this->storage = new SqlliteStorage();
-    }
 
     /**
      * Test that LiteCollection implements Countable interface.
      */
     public function testCountableInterface()
     {
-        $collection = new LiteCollection($this->storage);
+        $collection = new LiteCollection(new SqlliteStorage());
         $this->assertInstanceOf(Countable::class, $collection);
 
         // Initially, the collection should be empty
         $this->assertCount(0, $collection);
 
         // Add some items to the storage
-        $this->storage->insert(['id' => 1, 'name' => 'Item 1']);
-        $this->storage->insert(['id' => 2, 'name' => 'Item 2']);
+        $collection[] = ['id' => 1, 'name' => 'Item 1'];
+        $collection[] = ['id' => 2, 'name' => 'Item 2'];
 
         // Now, the collection should have 2 items
         $this->assertCount(2, $collection);
@@ -56,7 +44,7 @@ class LiteCollectionTest extends TestCase
      */
     public function testArrayAccessInterface()
     {
-        $collection = new LiteCollection($this->storage);
+        $collection = new LiteCollection(new SqlliteStorage());
 
         // Add some items to the storage
         $collection[] = ['id' => 1, 'name' => 'Item 1'];
@@ -107,7 +95,7 @@ class LiteCollectionTest extends TestCase
      */
     public function testLoopingOverCollection()
     {
-        $collection = new LiteCollection($this->storage);
+        $collection = new LiteCollection(new SqlliteStorage());
 
         // Add some items to the storage
         $collection[] = ['id' => 1, 'name' => 'Item 1'];
@@ -120,6 +108,18 @@ class LiteCollectionTest extends TestCase
         }
 
         $this->assertEquals([0 => 'Item 1', 1 => 'Item 2', 2 => 'Item 3'], $names);
+
+        // Test with object items
+        $collection = new LiteCollection(new SqlliteStorage());
+        $collection[] = (object)['id' => 1, 'name' => 'Item 1'];
+        $collection[] = (object)['id' => 2, 'name' => 'Item 2'];
+        $collection[] = (object)['id' => 3, 'name' => 'Item 3'];
+        $names = [];
+        foreach ($collection as $key => $item) {
+            $names[$key] = $item->name;
+        }
+        $this->assertEquals([0 => 'Item 1', 1 => 'Item 2', 2 => 'Item 3'], $names);
+
     }
 
     /**

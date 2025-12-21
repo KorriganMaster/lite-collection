@@ -120,7 +120,7 @@ class SqlliteStorage extends AbstractStorage
         if ($this->mode === StorageInterface::MODE_ASSOCIATIVE) {
             $id = is_array($item) || $item instanceof ArrayAccess
                 ? $item[$this->primaryKey] ?? null
-                : null;
+                : $item->{$this->primaryKey} ?? null;
             $stmt->bindValue(':id', $id, SQLITE3_INTEGER);
         }
 
