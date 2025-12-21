@@ -203,7 +203,7 @@ class SqliteStorage extends AbstractStorage
      */
     public function update(int $id, mixed $item): void
     {
-        $stmt = $this->db->prepare('UPDATE items SET data = :data WHERE id = :id');
+        $stmt = $this->db->prepare('REPLACE INTO items (id, data) VALUES (:id, :data)');
 
         if ($stmt === false) {
             throw new RuntimeException('Failed to prepare update statement.');
