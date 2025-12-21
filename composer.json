@@ -16,7 +16,7 @@
     ],
     "minimum-stability": "stable",
     "require": {
-        "php": "^8.0",
+        "php": "^8.4",
         "ext-sqlite3": "*"
     },
     "require-dev": {
@@ -27,6 +27,6 @@
     "scripts": {
         "test": "./vendor/bin/phpunit ./test",
         "phpstan": "./vendor/bin/phpstan analyse src --level=max",
-        "csfixer": "./vendor/bin/php-cs-fixer fix src --config=.php-cs-fixer.dist.php"
+        "csfixer": "./vendor/bin/php-cs-fixer fix src"
     }
 }
