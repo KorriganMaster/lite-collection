@@ -60,9 +60,9 @@ class SqliteStorage extends AbstractStorage
     /**
      * SqliteStorage constructor.
      *
-     * @param string $databasePath
      * @param int $mode
      * @param string $primaryKey
+     * @param string $databasePath
      */
     public function __construct(
         int $mode = StorageInterface::MODE_NORMAL,
