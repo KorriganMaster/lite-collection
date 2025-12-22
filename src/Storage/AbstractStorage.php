@@ -13,23 +13,24 @@ abstract class AbstractStorage implements StorageInterface
      *
      * @var int $mode
      */
-    protected int $mode = StorageInterface::MODE_NORMAL;
+    protected $mode = StorageInterface::MODE_NORMAL;
 
     /**
      * Private key field name
      *
-     * @var string $privateKey
+     * @var string $primaryKey
      */
-    protected string $primaryKey = 'id';
+    protected $primaryKey = 'id';
 
     /**
      * AbstractStorage constructor.
      *
      * @param int $mode
+     * @param string $primaryKey
      */
     public function __construct(
-        int $mode = StorageInterface::MODE_NORMAL,
-        string $primaryKey = 'id',
+        $mode = StorageInterface::MODE_NORMAL,
+        $primaryKey = 'id'
     ) {
         $this->mode = $mode;
         $this->primaryKey = $primaryKey;

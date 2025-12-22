@@ -1,0 +1,7 @@
+services:
+  php:
+    build: .
+    container_name: php-fpm
+    volumes:
+      - ./:/var/www/html
+    working_dir: /var/www/html

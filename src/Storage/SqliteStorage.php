@@ -20,42 +20,42 @@ class SqliteStorage extends AbstractStorage
      *
      * @var string $databasePath
      */
-    private string $databasePath = ':memory:';
+    private $databasePath = ':memory:';
 
     /**
      * SQLite database connection
      *
      * @var SQLite3 $db
      */
-    private SQLite3 $db;
+    private $db;
 
     /**
      * Prepared statement for select data
      *
      * @var SQLite3Stmt|false $selectStmt
      */
-    private SQLite3Stmt|false $selectStmt;
+    private $selectStmt;
 
     /**
      * Result set from the last query
      *
      * @var SQLite3Result|false $result
      */
-    private SQLite3Result|false $result;
+    private $result;
 
     /**
      * Current row data
      *
      * @var array<mixed>|bool $currentRow
      */
-    private mixed $currentRow;
+    private $currentRow;
 
     /**
      * Current position in the iterator
      *
      * @var int $position
      */
-    private int $position = 0;
+    private $position = 0;
 
     /**
      * SqliteStorage constructor.
@@ -65,9 +65,9 @@ class SqliteStorage extends AbstractStorage
      * @param string $databasePath
      */
     public function __construct(
-        int $mode = StorageInterface::MODE_NORMAL,
-        string $primaryKey = 'id',
-        string $databasePath = ':memory:',
+        $mode = StorageInterface::MODE_NORMAL,
+        $primaryKey = 'id',
+        $databasePath = ':memory:'
     ) {
         parent::__construct($mode, $primaryKey);
 
@@ -101,7 +101,7 @@ class SqliteStorage extends AbstractStorage
      * @param mixed $item
      * @return void
      */
-    public function insert(mixed $item): void
+    public function insert($item)
     {
         $queryString = 'INSERT INTO items (data) VALUES (:data)';
         if ($this->mode === StorageInterface::MODE_ASSOCIATIVE) {
@@ -133,7 +133,7 @@ class SqliteStorage extends AbstractStorage
      * @param int $id
      * @return mixed
      */
-    public function findById(int $id): mixed
+    public function findById($id)
     {
         $stmt = $this->db->prepare('SELECT * FROM items WHERE id = :id');
 
@@ -169,7 +169,7 @@ class SqliteStorage extends AbstractStorage
      * @param int $id
      * @return bool
      */
-    public function exists(int $id): bool
+    public function exists($id)
     {
         $stmt = $this->db->prepare('SELECT COUNT(*) as count FROM items WHERE id = :id');
 
@@ -201,7 +201,7 @@ class SqliteStorage extends AbstractStorage
      * @param mixed $item
      * @return void
      */
-    public function update(int $id, mixed $item): void
+    public function update($id, $item)
     {
         $stmt = $this->db->prepare('REPLACE INTO items (id, data) VALUES (:id, :data)');
 
@@ -225,7 +225,7 @@ class SqliteStorage extends AbstractStorage
      * @param int $id
      * @return void
      */
-    public function delete(int $id): void
+    public function delete($id)
     {
         $stmt = $this->db->prepare('DELETE FROM items WHERE id = :id');
 
@@ -259,7 +259,7 @@ class SqliteStorage extends AbstractStorage
      *
      * @return int
      */
-    public function count(): int
+    public function count()
     {
         $countResult = $this->db->querySingle('SELECT COUNT(*) as count FROM items');
         return (int) $countResult;
@@ -270,7 +270,7 @@ class SqliteStorage extends AbstractStorage
      *
      * @return mixed
      */
-    public function current(): mixed
+    public function current()
     {
         if (!is_array($this->currentRow)) {
             return null;
@@ -288,7 +288,7 @@ class SqliteStorage extends AbstractStorage
      *
      * @return void
      */
-    public function next(): void
+    public function next()
     {
         $this->position++;
 
@@ -305,7 +305,7 @@ class SqliteStorage extends AbstractStorage
      *
      * @return mixed
      */
-    public function key(): mixed
+    public function key()
     {
         if ($this->mode === StorageInterface::MODE_ASSOCIATIVE) {
             return is_array($this->currentRow)
@@ -321,7 +321,7 @@ class SqliteStorage extends AbstractStorage
      *
      * @return bool
      */
-    public function valid(): bool
+    public function valid()
     {
         return !empty($this->currentRow);
     }
@@ -331,7 +331,7 @@ class SqliteStorage extends AbstractStorage
      *
      * @return void
      */
-    public function rewind(): void
+    public function rewind()
     {
         $this->position = 0;
 
@@ -352,7 +352,7 @@ class SqliteStorage extends AbstractStorage
      * @param int $id
      * @return int
      */
-    private function normalizeId(int $id): int
+    private function normalizeId($id)
     {
         return $this->mode === StorageInterface::MODE_ASSOCIATIVE
             ? $id

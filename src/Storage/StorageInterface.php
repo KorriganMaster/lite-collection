@@ -37,7 +37,7 @@ interface StorageInterface extends Countable, Iterator
      * @param mixed $item
      * @return void
      */
-    public function insert(mixed $item): void;
+    public function insert($item);
 
     /**
      * Find an item by its ID
@@ -45,7 +45,7 @@ interface StorageInterface extends Countable, Iterator
      * @param int $id
      * @return mixed
      */
-    public function findById(int $id): mixed;
+    public function findById($id);
 
     /**
      * Check if an item exists by its ID
@@ -53,7 +53,7 @@ interface StorageInterface extends Countable, Iterator
      * @param int $id
      * @return bool
      */
-    public function exists(int $id): bool;
+    public function exists($id);
 
     /**
      * Update an existing item by its ID
@@ -62,7 +62,7 @@ interface StorageInterface extends Countable, Iterator
      * @param mixed $item
      * @return void
      */
-    public function update(int $id, mixed $item): void;
+    public function update($id, $item);
 
     /**
      * Delete an item by its ID
@@ -70,5 +70,5 @@ interface StorageInterface extends Countable, Iterator
      * @param int $id
      * @return void
      */
-    public function delete(int $id): void;
+    public function delete($id);
 }

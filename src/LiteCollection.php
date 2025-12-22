@@ -22,16 +22,16 @@ use Traversable;
 class LiteCollection implements Countable, ArrayAccess, IteratorAggregate
 {
     /**
-     * @param StorageInterface $storage
+     * @var StorageInterface $storage
      */
-    private StorageInterface $storage;
+    private $storage;
 
     /**
      * LiteCollection constructor.
      *
      * @param StorageInterface $storage
      */
-    public function __construct(StorageInterface $storage)
+    public function __construct($storage)
     {
         $this->storage = $storage;
     }
@@ -41,7 +41,7 @@ class LiteCollection implements Countable, ArrayAccess, IteratorAggregate
      *
      * @return int
      */
-    public function count(): int
+    public function count()
     {
         return count($this->storage);
     }
@@ -52,7 +52,7 @@ class LiteCollection implements Countable, ArrayAccess, IteratorAggregate
      * @param int $offset
      * @return mixed
      */
-    public function offsetGet($offset): mixed
+    public function offsetGet($offset)
     {
         return $this->storage->findById($offset);
     }
@@ -63,7 +63,7 @@ class LiteCollection implements Countable, ArrayAccess, IteratorAggregate
      * @param int $offset
      * @param mixed $value
      */
-    public function offsetSet($offset = null, $value = null): void
+    public function offsetSet($offset = null, $value = null)
     {
         if (is_null($offset)) {
             $this->storage->insert($value);
@@ -77,7 +77,7 @@ class LiteCollection implements Countable, ArrayAccess, IteratorAggregate
      *
      * @param int $offset
      */
-    public function offsetUnset($offset): void
+    public function offsetUnset($offset)
     {
         $this->storage->delete($offset);
     }
@@ -88,7 +88,7 @@ class LiteCollection implements Countable, ArrayAccess, IteratorAggregate
      * @param int $offset
      * @return bool
      */
-    public function offsetExists($offset): bool
+    public function offsetExists($offset)
     {
         return $this->storage->exists($offset);
     }
@@ -98,7 +98,7 @@ class LiteCollection implements Countable, ArrayAccess, IteratorAggregate
      *
      * @return Iterator
      */
-    public function getIterator(): Iterator
+    public function getIterator()
     {
         return $this->storage;
     }
