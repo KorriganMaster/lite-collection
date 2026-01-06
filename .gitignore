@@ -3,3 +3,6 @@ vendor/
 
 # Ignore CSS Fixer cache files
 .php-cs-fixer.cache
+
+# Ignore IDE specific files
+.vscode/
