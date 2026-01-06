@@ -28,7 +28,7 @@ class SqliteStorageTest extends TestCase
         $storage = new SqliteStorage(StorageInterface::MODE_NORMAL, 'id', 'test_db.sqlite');
         $this->assertFileExists('test_db.sqlite');
         unset($storage);
-        $this->assertFileDoesNotExist('test_db.sqlite');
+        $this->assertFileNotExists('test_db.sqlite');
     }
 
     /**

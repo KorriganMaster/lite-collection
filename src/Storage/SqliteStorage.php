@@ -144,7 +144,7 @@ class SqliteStorage extends AbstractStorage
         $stmt->bindValue(
             ':id',
             $this->normalizeId($id),
-            SQLITE3_INTEGER,
+            SQLITE3_INTEGER
         );
         $result = $stmt->execute();
 
@@ -180,7 +180,7 @@ class SqliteStorage extends AbstractStorage
         $stmt->bindValue(
             ':id',
             $this->normalizeId($id),
-            SQLITE3_INTEGER,
+            SQLITE3_INTEGER
         );
         $result = $stmt->execute();
 
@@ -214,7 +214,7 @@ class SqliteStorage extends AbstractStorage
         $stmt->bindValue(
             ':id',
             $this->normalizeId($id),
-            SQLITE3_INTEGER,
+            SQLITE3_INTEGER
         );
         $stmt->execute();
     }
@@ -236,7 +236,7 @@ class SqliteStorage extends AbstractStorage
         $stmt->bindValue(
             ':id',
             $this->normalizeId($id),
-            SQLITE3_INTEGER,
+            SQLITE3_INTEGER
         );
         $stmt->execute();
 
